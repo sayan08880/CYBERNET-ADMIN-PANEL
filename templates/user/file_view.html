@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block head %}FILE / {{ f.name }}{% endblock %}
+{% block body %}
+<div class="card">
+  <h3>{{ f.name }} &nbsp;<span class="tag {{ f.flag }}">{{ f.flag }}</span>
+    {% if can_write %}<span class="tag ok">READ + WRITE</span>{% else %}<span class="tag warn">READ ONLY</span>{% endif %}</h3>
+  <p class="muted" style="margin-bottom:10px">{{ f.description }} · modified {{ hm(f.modified) }}</p>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <textarea name="content" {{ 'readonly' if not can_write }}>{{ f.content }}</textarea>
+    {% if can_write %}<button class="btn">SAVE FILE</button>{% endif %}
+    <a class="btn ghost" href="{{ url_for('user_dashboard') }}">BACK</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}{% block head %}ADMIN ACCOUNT{% endblock %}
+{% block body %}
+<div class="grid g2">
+  <div>
+    <div class="card"><h3>ACCOUNT</h3>
+      <p><b style="font-size:18px">{{ u.username }}</b> <span class="tag ok">ACTIVE</span></p>
+      <p class="muted">Last login: {{ hm(u.last_seen) }} · Session: <span class="dot g"></span>active</p>
+      <div class="row" style="margin-top:10px">
+        <a class="btn sm ghost" href="{{ url_for('change_password') }}">CHANGE PASSWORD</a>
+        <a class="btn sm red" href="{{ url_for('logout') }}">LOGOUT</a>
+      </div>
+    </div>
+    <div class="card"><h3>ADMIN S-TIME (LOGIN WINDOW)</h3>
+      <form method="post" class="row">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div><label>Start</label><input type="time" name="s_start" value="{{ s_start }}"></div>
+        <div><label>End</label><input type="time" name="s_end" value="{{ s_end }}"></div>
+        <div style="align-self:flex-end"><button class="btn sm">SET</button></div>
+      </form>
+      <p class="mono muted" style="margin-top:6px">{{ s_start }} ──────────── {{ s_end }} &nbsp; ADMIN LOGIN ALLOWED</p>
+      <p class="muted" style="font-size:12px;margin-top:6px">Logins outside this window are denied and logged as a security event.</p>
+    </div>
+    <div class="card"><h3>ACTIVE SESSIONS</h3>
+      {% for s in sessions %}<div class="timeline"><div><span class="dot g"></span>
+        <b>{{ s.username }}</b> <span class="muted">({{ s.role }}) · {{ hm(s.last_seen) }}</span></div></div>
+      {% else %}<p class="muted">No active sessions.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="card"><h3>SECURITY LOGS</h3><div class="timeline">
+    {% for l in logs %}<div><span class="mono muted">{{ hm(l.ts) }}</span> <b>{{ l.actor }}</b>
+      <span class="tag {{ 'bad' if 'DENIED' in l.action or 'FAILED' in l.action else 'N' }}">{{ l.action }}</span>
+      <span class="muted">{{ l.detail }}</span></div>
+    {% endfor %}
+  </div></div>
+</div>
+{% endblock %}

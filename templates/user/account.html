@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% block head %}ACCOUNT{% endblock %}
+{% block body %}
+<div class="grid g2">
+  <div>
+    <div class="card"><h3>ACCOUNT</h3>
+      <p><b style="font-size:17px">{{ u.username }}</b>
+        {% if u.status=='active' %}<span class="tag ok">ACTIVE</span>{% endif %}</p>
+      <p class="muted mono">S-TIME: {{ u.s_start }} → {{ u.s_end }}</p>
+      <p class="muted">Last login: {{ hm(u.last_seen) if u.last_seen else 'never' }}</p>
+      <div class="row" style="margin-top:10px">
+        <a class="btn sm ghost" href="{{ url_for('change_password') }}">CHANGE PASSWORD</a>
+        <a class="btn sm red" href="{{ url_for('logout') }}">LOGOUT</a>
+      </div>
+    </div>
+    <div class="card"><h3>SEND REQUEST TO ADMIN</h3>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label>Request type</label>
+        <select name="type" id="rtype" onchange="document.getElementById('fpick').style.display=this.value.includes('permission')||this.value=='CF access'?'block':'none'">
+          <option>Password change</option>
+          <option>CF access</option>
+          <option>Read permission</option>
+          <option>Write permission</option>
+          <option>Read + Write permission</option>
+          <option>Other admin request</option>
+        </select>
+        <div id="fpick" style="display:none"><label>File</label>
+          <select name="payload">{% for f in files %}
+            <option value="{{ f.id }}|{{ u.username }}">{{ f.name }} ({{ f.flag }})</option>{% endfor %}
+          </select></div>
+        <button class="btn">SEND REQUEST</button>
+      </form>
+    </div>
+  </div>
+  <div class="card"><h3>MY REQUESTS</h3><div class="timeline">
+    {% for r in reqs %}
+    <div><span class="mono muted">{{ hm(r.created) }}</span> <b>{{ r.type }}</b>
+      {% if r.status=='pending' %}<span class="tag warn">PENDING</span>
+      {% elif r.status=='approved' %}<span class="tag ok">APPROVED</span>
+      {% else %}<span class="tag bad">REJECTED</span>{% endif %}</div>
+    {% else %}<p class="muted">No requests sent.</p>{% endfor %}
+  </div></div>
+</div>
+{% endblock %}

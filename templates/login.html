@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYBERNET</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body><div class="loginstage"><div class="loginbox">
+  <h1>CYBER<span>NET</span></h1><div class="sub">{{ title }}</div>
+  {% if err %}<div class="err">{{ err }}</div>{% endif %}
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>Username</label><input name="username" required autofocus>
+    <label>Password</label><input name="password" type="password" required>
+    <button class="btn" style="width:100%">LOGIN</button>
+  </form>
+  {% if role == 'admin' %}
+  <p class="muted" style="text-align:center;margin-top:14px;font-size:12px">
+    Admin access window (S-Time): <b class="mono">{{ s_start }} – {{ s_end }}</b></p>
+  {% endif %}
+  <div class="roleswitch">
+    {% if role == 'admin' %}
+      <a href="{{ url_for('user_login') }}">→ USER LOGIN</a>
+    {% else %}
+      <a href="{{ url_for('admin_login') }}">→ ADMIN LOGIN</a>
+    {% endif %}
+  </div>
+</div></div></body></html>

@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block head %}DASHBOARD{% endblock %}
+{% block body %}
+<div class="card">
+  <h3>WELCOME, {{ u.username }}</h3>
+  <p><span class="dot {{ 'g' if online else 'gr' }}"></span>{{ 'ONLINE' if online else 'OFFLINE' }}
+    &nbsp;·&nbsp; S-TIME <b class="mono">{{ u.s_start }} → {{ u.s_end }}</b></p>
+</div>
+{% if denied %}
+<div class="card"><h3>SECURITY NOTICE</h3>
+  {% for d in denied %}<p><span class="tag bad">LOGIN DENIED</span>
+    <span class="muted mono">{{ hm(d.ts) }}</span> — {{ d.detail }}</p>{% endfor %}
+</div>
+{% endif %}
+<div class="grid g4">
+  <div class="stat"><b>{{ files|length }}</b><span>FILES</span></div>
+  <div class="stat"><b>{{ works|length }}</b><span>ACTIVE WORK</span></div>
+  <div class="stat"><b>{{ reqs }}</b><span>PENDING REQUESTS</span></div>
+  <div class="stat"><b>{{ unread }}</b><span>UNREAD MESSAGES</span></div>
+</div>
+<div class="grid g2" style="margin-top:16px">
+  <div class="card"><h3>MY FILES</h3>
+    {% for f in files %}
+    <div class="timeline"><div>
+      <span class="tag {{ f.flag }}">{{ f.flag }}</span>
+      <a href="{{ url_for('user_file', fid=f.id) }}"><b>{{ f.name }}</b></a>
+      <span class="muted mono">{{ f.perm }}</span>
+      <span class="muted mono" style="float:right">{{ hm(f.modified) }}</span></div></div>
+    {% else %}<p class="muted">No files assigned. Request access in ACCOUNT.</p>{% endfor %}
+  </div>
+  <div class="card"><h3>ACTIVE WORK</h3>
+    {% for w in works %}
+    <div class="timeline"><div><b>{{ w.title }}</b> <span class="tag {{ 'warn' if w.priority=='High' else 'N' }}">{{ w.priority }}</span>
+      <div class="bar"><i style="width:{{ w.progress }}%"></i></div>
+      <span class="muted mono">{{ w.progress }}% · due {{ w.due or '—' }}</span></div></div>
+    {% else %}<p class="muted">No active work.</p>{% endfor %}
+    <a class="btn sm ghost" href="{{ url_for('user_work') }}" style="margin-top:8px">OPEN WORK</a>
+  </div>
+</div>
+{% endblock %}

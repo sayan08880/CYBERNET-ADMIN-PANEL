@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYBERNET</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body><div class="layout">
+<aside class="sidebar">
+  <div class="brand">CYBER<span>NET</span></div>
+  <nav class="nav">
+  {% if u.role == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}" class="{{ 'on' if request.endpoint=='admin_dashboard' }}">DASHBOARD</a>
+    <a href="{{ url_for('admin_control') }}" class="{{ 'on' if request.endpoint in ['admin_control','admin_user_detail'] }}">CONTROL</a>
+    <a href="{{ url_for('admin_files') }}" class="{{ 'on' if request.endpoint in ['admin_files','admin_file_edit'] }}">FILESYSTEM</a>
+    <a href="{{ url_for('admin_chat') }}" class="{{ 'on' if request.endpoint=='admin_chat' }}">MESSEGE / CHAT</a>
+    <a href="{{ url_for('admin_work') }}" class="{{ 'on' if request.endpoint=='admin_work' }}">&#8627; WORKP</a>
+    <a href="{{ url_for('admin_requests') }}" class="{{ 'on' if request.endpoint=='admin_requests' }}">&#8627; REQUEST</a>
+    <a href="{{ url_for('admin_account') }}" class="{{ 'on' if request.endpoint=='admin_account' }}">ADMIN</a>
+  {% else %}
+    <a href="{{ url_for('user_dashboard') }}" class="{{ 'on' if request.endpoint=='user_dashboard' }}">DASHBOARD</a>
+    <a href="{{ url_for('user_work') }}" class="{{ 'on' if request.endpoint=='user_work' }}">WORK</a>
+    <a href="{{ url_for('user_contact') }}" class="{{ 'on' if request.endpoint=='user_contact' }}">CONTACT</a>
+    <a href="{{ url_for('user_account') }}" class="{{ 'on' if request.endpoint=='user_account' }}">ACCOUNT</a>
+  {% endif %}
+    <a href="{{ url_for('logout') }}">LOGOUT</a>
+  </nav>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <h1>{% block head %}{% endblock %}</h1>
+    <div class="muted">{{ u.username }} &nbsp;·&nbsp; {{ hm() }}</div>
+  </div>
+  {% with msgs = get_flashed_messages() %}
+    {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+</main></div></body></html>

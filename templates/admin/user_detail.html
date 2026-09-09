@@ -1,0 +1,53 @@
+{% extends "base.html" %}{% block head %}CONTROL / {{ t.username }}{% endblock %}
+{% block body %}
+<div class="card"><h3>USER</h3>
+  <div class="row" style="justify-content:space-between">
+    <div>
+      <b style="font-size:18px">{{ t.username }}</b><br>
+      {% if t.status=='active' %}<span class="tag ok">ACTIVE</span>
+      {% elif t.status=='blocked' %}<span class="tag bad">BLOCKED</span>
+      {% else %}<span class="tag warn">DISABLED</span>{% endif %}
+      &nbsp;<span class="muted">Last login: {{ hm(t.last_seen) if t.last_seen else 'never' }}</span>
+    </div>
+    <div class="row">
+      {% if t.status=='blocked' %}
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="unblock"><button class="btn sm">UNBLOCK</button></form>
+      {% elif t.status=='disabled' %}
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="enable"><button class="btn sm">ENABLE</button></form>
+      {% else %}
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="block"><button class="btn sm red">BLOCK</button></form>
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="disable"><button class="btn sm ghost">DISABLE</button></form>
+      {% endif %}
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="kick"><button class="btn sm ghost">FORCE LOGOUT</button></form>
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}" onsubmit="return confirm('Reset password to user123?')"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="resetpw"><button class="btn sm ghost">RESET PW</button></form>
+      <form method="post" action="{{ url_for('admin_user_action', uid=t.id) }}" onsubmit="return confirm('DELETE this user permanently?')"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="delete"><button class="btn sm red">DELETE</button></form>
+    </div>
+  </div>
+</div>
+<div class="grid g2">
+  <div class="card"><h3>S-TIME</h3>
+    <form method="post" action="{{ url_for('admin_user_stime', uid=t.id) }}" class="row">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div><label>Start</label><input type="time" name="s_start" value="{{ t.s_start }}"></div>
+      <div><label>End</label><input type="time" name="s_end" value="{{ t.s_end }}"></div>
+      <div style="align-self:flex-end"><button class="btn sm">SET S-TIME</button></div>
+    </form>
+    <p class="mono muted" style="margin-top:8px">{{ t.s_start }} ──────────── {{ t.s_end }} &nbsp; ALLOWED</p>
+  </div>
+  <div class="card"><h3>ASSIGNED FILES</h3>
+    {% for f in files %}<div class="timeline"><div><span class="tag {{ f.flag }}">{{ f.flag }}</span>
+      {{ f.name }} <span class="muted mono">{{ f.perm }}</span></div></div>
+    {% else %}<p class="muted">No file access.</p>{% endfor %}
+  </div>
+  <div class="card"><h3>WORK</h3>
+    {% for w in works %}<div class="timeline"><div><b>{{ w.title }}</b>
+      <div class="bar"><i style="width:{{ w.progress }}%"></i></div>
+      <span class="muted">{{ w.progress }}% · {{ w.status }}</span></div></div>
+    {% else %}<p class="muted">No work assigned.</p>{% endfor %}
+  </div>
+  <div class="card"><h3>ACTIVITY</h3><div class="timeline">
+    {% for a in activity %}<div><span class="mono muted">{{ hm(a.ts) }}</span> {{ a.action }} <span class="muted">{{ a.detail }}</span></div>
+    {% else %}<p class="muted">No activity.</p>{% endfor %}
+  </div></div>
+</div>
+{% endblock %}

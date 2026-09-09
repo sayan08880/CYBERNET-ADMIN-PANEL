@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block head %}CONTROL — USERS{% endblock %}
+{% block body %}
+<div class="card"><h3>CREATE USER</h3>
+  <form method="post" action="{{ url_for('admin_create_user') }}" class="row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div style="flex:2"><label>Username</label><input name="username" required style="text-transform:uppercase"></div>
+    <div><label>S-Time start</label><input type="time" name="s_start" value="07:00"></div>
+    <div><label>S-Time end</label><input type="time" name="s_end" value="19:00"></div>
+    <div style="align-self:flex-end"><button class="btn">CREATE</button></div>
+  </form>
+  <p class="muted" style="font-size:12px">Default password: <b class="mono">user123</b> (user must change it on first login).</p>
+</div>
+<div class="card"><h3>USERS</h3>
+<table><tr><th>USER</th><th>STATUS</th><th>S-TIME</th><th>ONLINE</th><th>FILES</th><th></th></tr>
+{% for x in users %}
+<tr>
+  <td><b>{{ x.username }}</b></td>
+  <td>{% if x.status=='active' %}<span class="tag ok">ACTIVE</span>
+      {% elif x.status=='blocked' %}<span class="tag bad">BLOCKED</span>
+      {% else %}<span class="tag warn">DISABLED</span>{% endif %}</td>
+  <td class="mono">{{ x.s_start }} → {{ x.s_end }}</td>
+  <td>{% if now_ts - x.last_seen < 60 %}<span class="dot g"></span>online{% else %}<span class="dot gr"></span>offline{% endif %}</td>
+  <td class="mono">{{ x.id }}</td>
+  <td><a class="btn sm ghost" href="{{ url_for('admin_user_detail', uid=x.id) }}">MANAGE</a></td>
+</tr>
+{% else %}<tr><td colspan="6" class="muted">No users yet.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

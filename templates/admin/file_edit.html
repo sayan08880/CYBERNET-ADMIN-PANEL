@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% block head %}FILE / {{ f.name }}{% endblock %}
+{% block body %}
+<div class="card"><h3>EDIT FILE — ONLY ADMIN CAN DELETE FILES</h3>
+  <form method="post" action="{{ url_for('admin_file_save', fid=f.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="row">
+      <div style="flex:2"><label>Name</label><input name="name" value="{{ f.name }}"></div>
+      <div style="flex:2"><label>Description</label><input name="description" value="{{ f.description }}"></div>
+      <div><label>Flag</label><select name="flag">
+        <option value="N" {{ 'selected' if f.flag=='N' }}>N — normal</option>
+        <option value="AF" {{ 'selected' if f.flag=='AF' }}>AF — Access File</option>
+        <option value="CF" {{ 'selected' if f.flag=='CF' }}>CF — Confidential File</option></select></div>
+    </div>
+    <label>Content</label>
+    <textarea name="content">{{ f.content }}</textarea>
+    <label>User permissions</label>
+    <div class="row">
+      {% for x in users %}
+      <div style="min-width:150px"><label>{{ x.username }}</label>
+        <select name="perm_{{ x.id }}">
+          <option value="" {{ 'selected' if x.perm=='' }}>—</option>
+          <option {{ 'selected' if x.perm=='R' }}>R</option>
+          <option {{ 'selected' if x.perm=='W' }}>W</option>
+          <option {{ 'selected' if x.perm=='RW' }}>RW</option></select></div>
+      {% endfor %}
+    </div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn">SAVE FILE</button>
+  </form>
+      <form method="post" action="{{ url_for('admin_file_delete', fid=f.id) }}" onsubmit="return confirm('Delete {{ f.name }}? Only admin can do this.')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn red">DELETE FILE</button>
+      </form>
+      <a class="btn ghost" href="{{ url_for('admin_files') }}">BACK</a>
+    </div>
+</div>
+{% endblock %}

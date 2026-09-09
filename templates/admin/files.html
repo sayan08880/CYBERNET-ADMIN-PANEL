@@ -1,0 +1,32 @@
+{% extends "base.html" %}{% block head %}FILESYSTEM{% endblock %}
+{% block body %}
+<div class="card"><h3>CREATE FILE</h3>
+  <form method="post" action="{{ url_for('admin_file_create') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="row">
+      <div style="flex:2"><label>File name</label><input name="name" placeholder="report.txt" required></div>
+      <div style="flex:3"><label>Description</label><input name="description" placeholder="Project report"></div>
+    </div>
+    <label>User permissions</label>
+    <div class="row">
+      {% for x in users %}
+      <div style="min-width:150px"><label>{{ x.username }}</label>
+        <select name="perm_{{ x.id }}"><option value="">—</option><option>R</option><option>W</option><option>RW</option></select></div>
+      {% endfor %}
+    </div>
+    <button class="btn">CREATE FILE</button>
+  </form>
+</div>
+<div class="card"><h3>FILES</h3>
+<table><tr><th>FILE</th><th>FLAG</th><th>MODIFIED</th><th>ACCESS</th><th></th></tr>
+{% for f in files %}
+<tr>
+  <td><b>{{ f.name }}</b><br><span class="muted" style="font-size:12px">{{ f.description }}</span></td>
+  <td><span class="tag {{ f.flag }}">{{ f.flag }}</span></td>
+  <td class="mono">{{ hm(f.modified) }}</td>
+  <td>{% for p in f.perms %}<span class="mono">{{ p.username }}:{{ p.perm }}</span> {% else %}<span class="muted">—</span>{% endfor %}</td>
+  <td><a class="btn sm ghost" href="{{ url_for('admin_file_edit', fid=f.id) }}">OPEN</a></td>
+</tr>
+{% else %}<tr><td colspan="5" class="muted">No files yet.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

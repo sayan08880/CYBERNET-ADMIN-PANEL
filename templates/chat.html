@@ -1,0 +1,63 @@
+{% extends "base.html" %}{% block head %}{{ title }}{% endblock %}
+{% block body %}
+<div class="chatwrap">
+  <div class="clist">
+    <div class="csearch"><input id="search" placeholder="Search users..." onkeyup="renderList()"></div>
+    <div id="contacts"></div>
+  </div>
+  <div class="cmain">
+    <div class="chead" id="chead"><span class="muted">Select a conversation</span></div>
+    <div class="cbody" id="cbody"></div>
+    <div class="cinput">
+      <input id="msg" placeholder="Type a message..." autocomplete="off"
+        onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="btn" onclick="sendMsg()">&#10148;</button>
+    </div>
+  </div>
+</div>
+<script>
+const CSRF = "{{ csrf_token }}";
+let contacts = [], peer = null, timer = null;
+async function loadContacts(){
+  const r = await fetch('/api/contacts'); contacts = await r.json(); renderList();
+}
+function renderList(){
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  document.getElementById('contacts').innerHTML = contacts.filter(c=>
+    c.username.toLowerCase().includes(q)).map(c=>`
+    <div class="citem ${peer===c.id?'on':''}" onclick="openChat(${c.id})">
+      <div class="av">${c.username.slice(0,2)}</div>
+      <div class="meta"><b>${c.username} ${c.role==='admin'?'&#128737;':''}</b>
+        <p>${c.last||'<i>no messages</i>'}</p></div>
+      <div>${c.online?'<span class="dot g"></span>':''}${c.unread?`<span class="badge">${c.unread}</span>`:''}</div>
+    </div>`).join('');
+}
+async function openChat(id){
+  peer = id; clearInterval(timer);
+  const c = contacts.find(x=>x.id===id);
+  document.getElementById('chead').innerHTML =
+    `<div class="av" style="width:34px;height:34px;font-size:13px">${c.username.slice(0,2)}</div>
+     <div><b>${c.username}</b><br><span class="muted" style="font-size:12px">${c.online?'&#9679; Online':'offline'}</span></div>`;
+  await loadMsgs(); renderList();
+  timer = setInterval(loadMsgs, 3000);
+}
+async function loadMsgs(){
+  if(!peer) return;
+  const r = await fetch('/api/messages/'+peer); const msgs = await r.json();
+  document.getElementById('cbody').innerHTML = msgs.map(m=>`
+    <div class="bubble ${m.mine?'me':'them'}">${m.body}<small>${m.ts}</small></div>`).join('')
+    + '<div style="clear:both"></div>';
+  const b = document.getElementById('cbody'); b.scrollTop = b.scrollHeight;
+}
+async function sendMsg(){
+  const inp = document.getElementById('msg');
+  if(!peer || !inp.value.trim()) return;
+  const fd = new FormData();
+  fd.append('body', inp.value); fd.append('peer', peer); fd.append('csrf_token', CSRF);
+  inp.value = '';
+  await fetch('/api/send', {method:'POST', body:fd});
+  loadMsgs(); loadContacts();
+}
+loadContacts(); setInterval(loadContacts, 8000);
+</script>
+{% endblock %}

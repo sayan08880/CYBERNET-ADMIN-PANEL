@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% block head %}MESSEGE / WORKP{% endblock %}
+{% block body %}
+<div class="card"><h3>ASSIGN WORK</h3>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="row">
+      <div><label>User</label><select name="user_id">
+        {% for x in users %}<option value="{{ x.id }}">{{ x.username }}</option>{% endfor %}
+      </select></div>
+      <div style="flex:2"><label>Title</label><input name="title" required></div>
+      <div><label>Priority</label><select name="priority"><option>Low</option><option selected>Normal</option><option>High</option></select></div>
+      <div><label>Due</label><input type="date" name="due"></div>
+    </div>
+    <label>Description</label><input name="description" placeholder="Finish chapter 3 and update report.txt">
+    <button class="btn">ASSIGN WORK</button>
+  </form>
+</div>
+<div class="card"><h3>WORK STATUS</h3>
+<table><tr><th>USER</th><th>WORK</th><th>PROGRESS</th><th>STATUS</th><th>DUE</th></tr>
+{% for w in works %}
+<tr>
+  <td><b>{{ w.username }}</b></td>
+  <td>{{ w.title }}<br><span class="muted" style="font-size:12px">{{ w.description }}</span></td>
+  <td style="min-width:150px"><div class="bar"><i style="width:{{ w.progress }}%"></i></div>
+      <span class="mono muted">{{ w.progress }}%</span></td>
+  <td>{% if w.status=='working' %}<span class="tag ok">WORKING</span>{% else %}<span class="tag warn">NOT ACTIVE</span>{% endif %}</td>
+  <td class="mono">{{ w.due }}</td>
+</tr>
+{% else %}<tr><td colspan="5" class="muted">No work assigned yet.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

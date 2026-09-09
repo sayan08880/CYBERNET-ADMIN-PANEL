@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block head %}WORK{% endblock %}
+{% block body %}
+{% for w in works %}
+<div class="card">
+  <div class="row" style="justify-content:space-between">
+    <div><b style="font-size:15px">{{ w.title }}</b>
+      <span class="tag {{ 'warn' if w.priority=='High' else 'N' }}">{{ w.priority }}</span>
+      {% if w.status=='working' %}<span class="tag ok">WORKING</span>{% else %}<span class="tag warn">NOT ACTIVE</span>{% endif %}
+      <p class="muted" style="margin-top:6px">{{ w.description }}</p>
+      <p class="muted mono" style="font-size:12px">Due: {{ w.due or '—' }} · assigned {{ hm(w.created) }}</p>
+    </div>
+    <div style="text-align:right;min-width:170px">
+      <div class="bar"><i style="width:{{ w.progress }}%"></i></div>
+      <span class="mono muted">{{ w.progress }}%</span>
+    </div>
+  </div>
+  <form method="post" class="row" style="margin-top:12px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="work_id" value="{{ w.id }}">
+    <div style="flex:1"><input type="range" name="progress" min="0" max="100" value="{{ w.progress }}" style="padding:0"></div>
+    <select name="status" style="width:140px;margin:0">
+      <option value="working" {{ 'selected' if w.status=='working' }}>Working</option>
+      <option value="not active" {{ 'selected' if w.status=='not active' }}>Not active</option>
+    </select>
+    <button class="btn sm">UPDATE</button>
+  </form>
+</div>
+{% else %}<div class="card"><p class="muted">No work assigned.</p></div>{% endfor %}
+{% endblock %}

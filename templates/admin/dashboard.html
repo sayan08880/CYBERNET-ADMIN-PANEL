@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% block head %}DASHBOARD{% endblock %}
+{% block body %}
+<div class="grid g4">
+  <div class="stat"><b>{{ stats.users }}</b><span>USERS</span></div>
+  <div class="stat"><b>{{ stats.online }}</b><span>ONLINE</span></div>
+  <div class="stat"><b>{{ stats.sessions }}</b><span>ACTIVE SESSIONS</span></div>
+  <div class="stat"><b>{{ stats.files }}</b><span>FILES</span></div>
+  <div class="stat"><b>{{ stats.works }}</b><span>ACTIVE TASKS</span></div>
+  <div class="stat"><b>{{ stats.pending }}</b><span>PENDING REQUESTS</span></div>
+  <div class="stat"><b>{{ stats.failed }}</b><span>FAILED LOGINS (24H)</span></div>
+</div>
+<div class="grid g2" style="margin-top:16px">
+  <div class="card"><h3>RECENT ACTIVITY</h3><div class="timeline">
+    {% for a in activity %}
+    <div><span class="mono muted">{{ hm(a.ts) }}</span> &nbsp;<b>{{ a.actor }}</b>
+      <span class="muted">{{ a.action }}</span> {{ a.detail }}</div>
+    {% else %}<div class="muted">No activity yet.</div>{% endfor %}
+  </div></div>
+  <div>
+    <div class="card"><h3>RECENT FILE MODIFICATIONS</h3>
+      {% for f in recent_files %}
+      <div class="timeline"><div><span class="tag {{ f.flag }}">{{ f.flag }}</span>
+        <a href="{{ url_for('admin_file_edit', fid=f.id) }}">{{ f.name }}</a>
+        <span class="muted mono"> {{ hm(f.modified) }}</span></div></div>
+      {% else %}<p class="muted">No files yet.</p>{% endfor %}
+    </div>
+    <div class="card"><h3>SECURITY NOTIFICATIONS</h3><div class="timeline">
+      {% for n in notifs %}
+      <div><span class="mono muted">{{ hm(n.ts) }}</span> <span class="tag bad">{{ n.action }}</span>
+        <b>{{ n.actor }}</b> {{ n.detail }}</div>
+      {% else %}<p class="muted">No security events.</p>{% endfor %}
+    </div></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block head %}MESSEGE / REQUEST{% endblock %}
+{% block body %}
+<div class="card"><h3>ALL REQUESTS</h3>
+{% for r in reqs %}
+<div class="card" style="background:var(--panel2);display:flex;justify-content:space-between;align-items:center;gap:10px">
+  <div>
+    <b>{{ r.username }}</b> &nbsp;<span class="muted">{{ hm(r.created) }}</span><br>
+    <span class="tag pend">{{ r.type.upper() }}</span>
+    {% if r.payload %}<span class="mono muted">{{ r.payload }}</span>{% endif %}
+    &nbsp;
+    {% if r.status=='pending' %}<span class="tag warn">PENDING</span>
+    {% elif r.status=='approved' %}<span class="tag ok">APPROVED</span>
+    {% else %}<span class="tag bad">REJECTED</span>{% endif %}
+  </div>
+  {% if r.status=='pending' %}
+  <div class="row">
+    <form method="post" action="{{ url_for('admin_request_resolve', rid=r.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="action" value="approve"><button class="btn sm">APPROVE</button></form>
+    <form method="post" action="{{ url_for('admin_request_resolve', rid=r.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="action" value="reject"><button class="btn sm red">REJECT</button></form>
+  </div>
+  {% endif %}
+</div>
+{% else %}<p class="muted">No requests.</p>{% endfor %}
+</div>
+{% endblock %}
