@@ -1,56 +1,836 @@
 # CYBERNET
 
-Internal admin/user workstation — Flask + SQLite.
+> **CYBERNET** is a local/internal admin and user workstation built with **Flask + SQLite**. It provides role-based access, user administration, controlled file access, work assignment, messaging, request handling, session management, security logging, and configurable login time windows.
 
-## Features
-- **Admin panel**: Dashboard (users, sessions, activity, security notifications),
-  Control (create/block/disable/delete users, reset password, force logout, S-Time),
-  Filesystem (TXT files, AF/CF flags, per-user R/W/RW permissions, admin-only delete),
-  Messege (WORKP assign work, WhatsApp-style CHAT, REQUEST approve/reject),
-  Admin account (change password, security logs, sessions, **admin S-Time**).
-- **User panel**: Dashboard, Work (progress updates), Contact (chat with admin/users),
-  Account (send requests: password change, CF access, permissions).
-- **Security**: hashed passwords (Werkzeug), server-side session tokens (single active
-  session, force logout works), CSRF tokens, login rate limiting, S-Time enforcement,
-  audit logs, secure file permission checks.
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask)](https://flask.palletsprojects.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite)](https://www.sqlite.org/)
+[![License](https://img.shields.io/badge/License-Choose%20a%20license-lightgrey)](#license)
 
-## How to run
+---
+
+## 📸 Project Preview
+
+Add your project screenshot here:
+
+![CYBERNET Dashboard](assets/cybernet-dashboard.png)
+
+> **Important:** `assets/cybernet-dashboard.png` is a placeholder. Upload your real screenshot to the `assets/` folder in the GitHub repository and keep the filename/path the same, or change the Markdown path to match your image.
+
+### Recommended screenshot layout
+
+For a professional GitHub README, consider adding screenshots such as:
+
+- Admin Dashboard
+- User Dashboard
+- Admin Control / User Management
+- Filesystem / Permission Management
+- Message / Chat
+- Work Assignment
+- Security / Admin Account page
+- Login page
+
+Example:
+
+```md
+## Screenshots
+
+### Admin Dashboard
+![Admin Dashboard](assets/admin-dashboard.png)
+
+### User Dashboard
+![User Dashboard](assets/user-dashboard.png)
+
+### Chat
+![Chat](assets/chat.png)
+```
+
+---
+
+## ✨ Features
+
+### 👑 Admin Panel
+
+CYBERNET provides a dedicated administrator workspace with:
+
+- Dashboard overview
+- User creation and management
+- User blocking/disabling
+- User deletion
+- Password reset
+- Forced logout
+- Per-user S-Time/login window
+- Filesystem management
+- Per-user file permissions
+- File flags and descriptions
+- Work assignment
+- User-to-user/admin messaging
+- Request approval/rejection
+- Admin account management
+- Password change
+- Security/audit logs
+- Active session monitoring
+- Admin S-Time configuration
+
+### 👤 User Panel
+
+Users receive a separate workspace with:
+
+- User dashboard
+- Assigned work
+- Progress updates
+- Contact/chat
+- Account settings
+- Password-change requests
+- Permission requests
+- CF/file-access requests
+- Admin communication
+
+### 🔐 Security
+
+The application includes several server-side security controls:
+
+- Password hashing with Werkzeug
+- CSRF token protection for POST requests
+- Server-side session validation
+- Unique session tokens
+- Force-logout support
+- Login-attempt rate limiting
+- Account status checks
+- Configurable S-Time login restrictions
+- Role-based route protection
+- File permission checks
+- Audit/security logs
+- Secret key generated automatically on first run
+
+---
+
+## 🧠 Architecture
+
+```text
+                         ┌──────────────────────┐
+                         │       Browser        │
+                         │  Admin / User UI     │
+                         └──────────┬───────────┘
+                                    │ HTTP
+                                    ▼
+                         ┌──────────────────────┐
+                         │      Flask App       │
+                         │       app.py         │
+                         ├──────────────────────┤
+                         │ Authentication       │
+                         │ Authorization        │
+                         │ CSRF Protection      │
+                         │ Rate Limiting        │
+                         │ Session Validation   │
+                         │ S-Time Enforcement   │
+                         │ Audit Logging        │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │       SQLite         │
+                         │   data/cybernet.db   │
+                         ├──────────────────────┤
+                         │ users                │
+                         │ files                │
+                         │ file_perms           │
+                         │ works                │
+                         │ messages             │
+                         │ requests             │
+                         │ logs                 │
+                         │ settings             │
+                         └──────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Python |
+| Web Framework | Flask |
+| Database | SQLite |
+| Authentication | Flask session + Werkzeug password hashing |
+| Frontend | HTML, CSS, JavaScript |
+| Templates | Jinja2 |
+| Security | CSRF protection, rate limiting, session tokens, RBAC |
+| Runtime | Python 3.x |
+
+---
+
+## 📁 Project Structure
+
+```text
+CYBERNET/
+├── app.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+│
+├── data/
+│   ├── cybernet.db
+│   └── secret_key.txt
+│
+└── templates/
+    ├── base.html
+    ├── login.html
+    ├── chat.html
+    └── change_password.html
+```
+
+### Important note about `data/`
+
+The repository is configured to ignore:
+
+```text
+data/*.db
+data/secret_key.txt
+```
+
+This is intentional.
+
+The SQLite database and generated secret key contain application state and should normally **not** be committed to a public GitHub repository.
+
+---
+
+## 🚀 Installation
+
+### 1. Clone the repository
 
 ```bash
-cd cybernet
+git clone https://github.com/YOUR_USERNAME/CYBERNET.git
+cd CYBERNET
+```
+
+Replace `YOUR_USERNAME` with your GitHub username.
+
+### 2. Create a virtual environment
+
+#### Linux / macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### Windows
+
+```powershell
 python -m venv venv
-# Windows:  venv\Scripts\activate
-# Linux/Mac: source venv/bin/activate
+venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+### 4. Start CYBERNET
+
+```bash
 python app.py
 ```
 
-Then open:
+The application creates the required `data/` directory/database and secret key when necessary.
 
-- User login:  http://127.0.0.1:5000/login/user
-- Admin login: http://127.0.0.1:5000/login/admin
+---
 
-## Default credentials
+## 🌐 Access the Application
+
+After starting the Flask server, open:
+
+### User Login
+
+```text
+http://127.0.0.1:5000/login/user
+```
+
+### Admin Login
+
+```text
+http://127.0.0.1:5000/login/admin
+```
+
+---
+
+## 🔑 Default Development Accounts
 
 | Account | Username | Password |
-|---------|----------|----------|
-| Admin   | `admin`  | `admin`  |
-| New users (created by admin) | `USER01` etc | `user123` |
+|---|---|---|
+| Admin | `admin` | `admin` |
+| New users | Created by admin | `user123` |
 
-Both are forced to change the password on first login.
+### ⚠️ Security Warning
 
-## Admin login time: 6 AM to 11 PM
+These are **development defaults only**.
 
-The admin S-Time (login window) **defaults to 06:00 - 23:00 (6 AM - 11 PM)**.
-Logins outside this window are denied and recorded as a security event.
+Change all default credentials before using CYBERNET outside a local development environment.
 
-To change it: log in as admin -> **ADMIN** page -> "ADMIN S-TIME (LOGIN WINDOW)"
--> set Start / End -> SET. It applies immediately.
+The default admin account is configured to require a password change on first login.
 
-Each user also has their own S-Time, set by admin in **CONTROL**.
+---
 
-## Notes
-- Database is created automatically at `data/cybernet.db` on first run.
-- Chat is real-time-ish (3s polling). It is server-side stored; enable HTTPS and
-  add client-side encryption if you need true E2E.
-- For production: set `debug=False` in app.py, serve behind a real WSGI server.
+## ⏰ S-Time Login Control
+
+CYBERNET supports configurable login windows called **S-Time**.
+
+### Default Admin Window
+
+```text
+06:00 → 23:00
+```
+
+An admin login outside the configured window is denied and recorded as a security event.
+
+Each user can also have an individual S-Time configured by the administrator.
+
+### Admin Configuration
+
+After logging in:
+
+```text
+ADMIN
+  └── ADMIN S-TIME (LOGIN WINDOW)
+       ├── Start
+       └── End
+```
+
+Changes are applied immediately.
+
+---
+
+## 🔐 Authentication Flow
+
+```text
+User enters credentials
+        │
+        ▼
+Rate-limit check
+        │
+        ▼
+Find username + role
+        │
+        ▼
+Verify password hash
+        │
+        ▼
+Check account status
+        │
+        ▼
+Check S-Time
+        │
+        ▼
+Generate session token
+        │
+        ▼
+Create server-side session
+        │
+        ▼
+Open Admin/User dashboard
+```
+
+If a session token no longer matches the token stored for the user, the session is invalidated.
+
+This allows administrator-triggered force logout and helps prevent multiple active sessions for the same account.
+
+---
+
+## 🛡️ Security Model
+
+### Passwords
+
+Passwords are not stored as plain text. Werkzeug's password hashing functions are used for password verification.
+
+### CSRF Protection
+
+POST requests require a session CSRF token.
+
+The application accepts the token through:
+
+```text
+csrf_token
+```
+
+or:
+
+```text
+X-CSRF-Token
+```
+
+### Rate Limiting
+
+Repeated login attempts from the same address are temporarily restricted.
+
+Default behavior:
+
+```text
+Maximum attempts: 5
+Window: 5 minutes
+```
+
+### Session Security
+
+CYBERNET maintains a server-side session token for authenticated users.
+
+A session is rejected when:
+
+```text
+stored session_token != current session token
+```
+
+### Role-Based Access
+
+The application distinguishes between:
+
+```text
+admin
+user
+```
+
+Protected routes verify the current user's role before allowing access.
+
+---
+
+## 💬 Messaging
+
+CYBERNET includes a server-stored chat system.
+
+Features include:
+
+- User contact list
+- Admin/user conversations
+- Message history
+- Unread message counts
+- Online/offline indication
+- Searchable contact list
+- Periodic message polling
+
+The current frontend polls for messages approximately every 3 seconds.
+
+> This is not true end-to-end encryption. For sensitive deployments, use HTTPS and design an appropriate encryption architecture.
+
+---
+
+## 📂 Filesystem & Permissions
+
+The administrator can manage application files and assign permissions to users.
+
+Supported permission concepts include:
+
+```text
+R   = Read
+W   = Write
+RW  = Read + Write
+```
+
+The project also supports file flags such as:
+
+```text
+AF
+CF
+```
+
+and administrator-controlled deletion.
+
+Always review and harden the permission logic before deploying the application to an untrusted environment.
+
+---
+
+## 📝 Work Management
+
+The Work system allows administrators to assign work to users.
+
+Work records can contain:
+
+- Title
+- Description
+- Priority
+- Due date
+- Progress
+- Status
+- Creation timestamp
+
+Users can view assigned work and update progress.
+
+---
+
+## 📬 Request Management
+
+Users can submit requests to administrators, including requests related to:
+
+- Password changes
+- CF access
+- File permissions
+- Other account/access operations
+
+Administrators can review and approve or reject requests.
+
+---
+
+## 📊 Audit Logs
+
+CYBERNET records important security and administrative actions.
+
+Examples include:
+
+```text
+LOGIN
+LOGIN FAILED
+LOGIN BLOCKED
+LOGIN DENIED
+```
+
+The log system stores:
+
+- Timestamp
+- Actor
+- Action
+- Detail
+
+This provides a basic audit trail for administrative and security events.
+
+---
+
+## 🗄️ Database
+
+CYBERNET uses SQLite.
+
+The application creates the following core tables:
+
+```text
+users
+files
+file_perms
+works
+messages
+requests
+logs
+settings
+```
+
+The database file is:
+
+```text
+data/cybernet.db
+```
+
+For development this is convenient and lightweight. For a larger production deployment, consider a dedicated database server and proper backup/migration procedures.
+
+---
+
+## ⚙️ Configuration
+
+The application currently keeps important runtime settings inside the project/database structure.
+
+Examples include:
+
+```text
+Admin S-Time start
+Admin S-Time end
+User S-Time
+```
+
+The Flask secret key is generated automatically and stored in:
+
+```text
+data/secret_key.txt
+```
+
+Do not commit that file to a public repository.
+
+---
+
+## 🧪 Development
+
+Run the application locally:
+
+```bash
+python app.py
+```
+
+For development, you can work directly with the Flask application.
+
+For production:
+
+- Disable Flask debug mode.
+- Use a production WSGI server.
+- Put the application behind HTTPS.
+- Protect the secret key.
+- Use a production-grade database when appropriate.
+- Configure backups.
+- Restrict server/network access.
+- Review authorization and file-permission logic.
+- Replace default credentials.
+- Add proper monitoring and log rotation.
+
+---
+
+## 🐛 Troubleshooting
+
+### `ModuleNotFoundError: No module named 'flask'`
+
+Activate the virtual environment and install dependencies:
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+On Windows:
+
+```powershell
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Port already in use
+
+Find the process using port `5000` on Linux:
+
+```bash
+ss -ltnp | grep :5000
+```
+
+You can then stop the process or configure the application to use another port.
+
+### Database problems
+
+For a fresh development database, stop the application and remove:
+
+```text
+data/cybernet.db
+```
+
+Then start the application again.
+
+> Do this only when you intentionally want to reset the development database.
+
+### Login is denied because of S-Time
+
+Check the configured login window.
+
+For the admin account, the default window is:
+
+```text
+06:00 - 23:00
+```
+
+User accounts may have their own S-Time settings.
+
+---
+
+## 🔒 Production Security Checklist
+
+Before exposing CYBERNET to a network:
+
+- [ ] Change the default admin password
+- [ ] Use a strong Flask secret key
+- [ ] Keep `data/secret_key.txt` private
+- [ ] Keep database files out of Git
+- [ ] Disable debug mode
+- [ ] Use HTTPS
+- [ ] Use a production WSGI server
+- [ ] Review CSRF protection
+- [ ] Review authorization on every sensitive route
+- [ ] Review file permission enforcement
+- [ ] Add database backups
+- [ ] Add log rotation/retention
+- [ ] Consider stronger login throttling
+- [ ] Consider secure cookie settings
+- [ ] Consider a production database
+- [ ] Add security testing before deployment
+
+---
+
+## 🖼️ How to Attach an Image to GitHub README.md
+
+GitHub does not store a local image just because you reference it in Markdown. The image must be available in the repository or uploaded through GitHub's editor.
+
+### Method 1 — Recommended: Store the screenshot in the repository
+
+Create an image directory:
+
+```text
+CYBERNET/
+├── README.md
+└── assets/
+    └── cybernet-dashboard.png
+```
+
+Then reference it from `README.md`:
+
+```md
+![CYBERNET Dashboard](assets/cybernet-dashboard.png)
+```
+
+Commit and push both files:
+
+```bash
+git add README.md assets/cybernet-dashboard.png
+git commit -m "Add CYBERNET README and screenshots"
+git push
+```
+
+GitHub will render the image automatically.
+
+### Method 2 — Upload through the GitHub website
+
+1. Open your CYBERNET repository on GitHub.
+2. Click **Add file**.
+3. Choose **Upload files**.
+4. Create/select the `assets` directory.
+5. Upload your screenshot.
+6. Commit the file.
+7. Edit `README.md`.
+8. Add:
+
+```md
+![CYBERNET Dashboard](assets/your-image-name.png)
+```
+
+9. Commit the README.
+
+### Method 3 — Drag and drop into the README editor
+
+When editing `README.md` directly on GitHub:
+
+1. Open the README editor.
+2. Drag your image into the editor.
+3. GitHub will generate an image reference.
+4. Commit the changes.
+
+For a project repository, **Method 1 is usually the cleanest approach** because screenshots remain versioned together with the project.
+
+---
+
+## 📸 Suggested GitHub Screenshot Folder
+
+A clean structure would be:
+
+```text
+assets/
+├── cybernet-dashboard.png
+├── admin-dashboard.png
+├── user-dashboard.png
+├── filesystem.png
+├── chat.png
+├── work.png
+└── login.png
+```
+
+Then your README can contain:
+
+```md
+## Screenshots
+
+### Login
+
+![Login](assets/login.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](assets/admin-dashboard.png)
+
+### User Dashboard
+
+![User Dashboard](assets/user-dashboard.png)
+
+### Filesystem
+
+![Filesystem](assets/filesystem.png)
+
+### Chat
+
+![Chat](assets/chat.png)
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome.
+
+A typical workflow:
+
+```bash
+git checkout -b feature/my-feature
+```
+
+Make your changes, test them locally, then:
+
+```bash
+git add .
+git commit -m "Add my feature"
+git push origin feature/my-feature
+```
+
+Open a Pull Request on GitHub and describe:
+
+- What changed
+- Why it changed
+- How it was tested
+- Any security or compatibility considerations
+
+---
+
+## 📌 Roadmap
+
+Possible future improvements:
+
+- [ ] PostgreSQL/MySQL support
+- [ ] Better database migrations
+- [ ] Stronger session/cookie configuration
+- [ ] WebSocket-based real-time chat
+- [ ] Secure file upload/download
+- [ ] Two-factor authentication
+- [ ] Password recovery workflow
+- [ ] Advanced security dashboard
+- [ ] Login/session analytics
+- [ ] Improved audit-log filtering
+- [ ] Automated tests
+- [ ] Docker deployment
+- [ ] Production WSGI configuration
+- [ ] API documentation
+- [ ] Role/permission matrix
+- [ ] Backup and restore tools
+
+---
+
+## ⚠️ Disclaimer
+
+CYBERNET is an internal/admin workstation project intended for development, learning, and controlled environments.
+
+Security features implemented in the current version should not automatically be considered sufficient for production use. Perform a complete security review and testing before deploying it to an internet-facing or sensitive environment.
+
+---
+
+## 📄 License
+
+No license is currently specified.
+
+If you publish this project publicly, add an appropriate license file such as:
+
+```text
+LICENSE
+```
+
+and update this section accordingly.
+
+---
+
+## 👨‍💻 Project
+
+**Project:** CYBERNET  
+**Architecture:** Flask + SQLite  
+**Interface:** HTML / CSS / JavaScript  
+**Purpose:** Internal admin and user workstation
+
+---
+
+<p align="center">
+  <strong>CYBERNET</strong><br>
+  Secure • Controlled • Modular
+</p>
