@@ -27,36 +27,6 @@
 
 > **Important:** `assets/cybernet-dashboard.png` is a placeholder. Upload your real screenshot to the `assets/` folder in the GitHub repository and keep the filename/path the same, or change the Markdown path to match your image.
 
-### Recommended screenshot layout
-
-For a professional GitHub README, consider adding screenshots such as:
-
-- Admin Dashboard
-- User Dashboard
-- Admin Control / User Management
-- Filesystem / Permission Management
-- Message / Chat
-- Work Assignment
-- Security / Admin Account page
-- Login page
-
-Example:
-
-```md
-## Screenshots
-
-### Admin Dashboard
-![Admin Dashboard](assets/admin-dashboard.png)
-
-### User Dashboard
-![User Dashboard](assets/user-dashboard.png)
-
-### Chat
-![Chat](assets/chat.png)
-```
-
----
-
 ## ✨ Features
 
 ### 👑 Admin Panel
