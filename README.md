@@ -10,10 +10,20 @@
 ---
 
 ## 📸 Project Preview
+**ADMIN PANEL**
+![CYBERNET LogIN](ASSET/login.png)
+![CYBERNET](ASSET/A1.png)
+![CYBERNET](ASSET/AQ1.png)
+![CYBERNET](ASSET/AQ2.png)
+![CYBERNET](ASSET/AQ3.png)
+![CYBERNET](ASSET/AQ4.png)
+![CYBERNET](ASSET/AQ5.png)
 
-Add your project screenshot here:
-
-![CYBERNET Dashboard](ASSET/A1.png)
+**USER PANEL**
+![CYBERNET](ASSET/U1.png)
+![CYBERNET](ASSET/U2.png)
+![CYBERNET](ASSET/U3.png)
+![CYBERNET](ASSET/U4.png)
 
 > **Important:** `assets/cybernet-dashboard.png` is a placeholder. Upload your real screenshot to the `assets/` folder in the GitHub repository and keep the filename/path the same, or change the Markdown path to match your image.
 
