@@ -13,7 +13,7 @@
 
 Add your project screenshot here:
 
-![CYBERNET Dashboard](assets/cybernet-dashboard.png)
+![CYBERNET Dashboard](ASSET/A1.png)
 
 > **Important:** `assets/cybernet-dashboard.png` is a placeholder. Upload your real screenshot to the `assets/` folder in the GitHub repository and keep the filename/path the same, or change the Markdown path to match your image.
 
